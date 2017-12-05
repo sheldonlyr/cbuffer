@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2014, Willem-Hendrik Thiart
  * Use of this source code is governed by a BSD-style license that can be
@@ -39,18 +38,15 @@ static void __create_buffer_mirror(cbuf_t* cb)
         fail();
 
     /* create the array of data */
-    cb->data = mmap(NULL, cb->size << 1, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE,
-                    -1, 0);
+    cb->data = mmap(NULL, cb->size << 1, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     if (cb->data == MAP_FAILED)
         fail();
 
-    address = mmap(cb->data, cb->size, PROT_READ | PROT_WRITE,
-                   MAP_FIXED | MAP_SHARED, fd, 0);
+    address = mmap(cb->data, cb->size, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd, 0);
     if (address != cb->data)
         fail();
 
-    address = mmap(cb->data + cb->size, cb->size, PROT_READ | PROT_WRITE,
-                   MAP_FIXED | MAP_SHARED, fd, 0);
+    address = mmap(cb->data + cb->size, cb->size, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd, 0);
     if (address != cb->data + cb->size)
         fail();
 
@@ -59,9 +55,9 @@ static void __create_buffer_mirror(cbuf_t* cb)
         fail();
 }
 
-cbuf_t *cbuf_new(const unsigned int order)
+cbuf_t* cbuf_new(const unsigned int order)
 {
-    cbuf_t *me = malloc(sizeof(cbuf_t));
+    cbuf_t* me = malloc(sizeof(cbuf_t));
     me->size = 1UL << order;
     me->head = me->tail = 0;
     __create_buffer_mirror(me);
@@ -79,7 +75,7 @@ int cbuf_is_empty(const cbuf_t *me)
     return me->head == me->tail;
 }
 
-int cbuf_offer(cbuf_t *me, const unsigned char *data, const int size)
+int cbuf_offer(cbuf_t* me, const unsigned char* data, const int size)
 {
     /* prevent buffer from getting completely full or over commited */
     if (cbuf_unusedspace(me) <= size)
@@ -94,7 +90,7 @@ int cbuf_offer(cbuf_t *me, const unsigned char *data, const int size)
     return written;
 }
 
-unsigned char *cbuf_peek(const cbuf_t *me)
+unsigned char* cbuf_peek(const cbuf_t* me)
 {
     if (cbuf_is_empty(me))
         return NULL;
@@ -102,7 +98,7 @@ unsigned char *cbuf_peek(const cbuf_t *me)
     return me->data + me->head;
 }
 
-unsigned char *cbuf_poll(cbuf_t *me, const unsigned int size)
+unsigned char* cbuf_poll(cbuf_t* me, const unsigned int size)
 {
     if (cbuf_is_empty(me))
         return NULL;
@@ -112,12 +108,12 @@ unsigned char *cbuf_poll(cbuf_t *me, const unsigned int size)
     return end;
 }
 
-int cbuf_size(const cbuf_t *me)
+int cbuf_size(const cbuf_t* me)
 {
     return me->size;
 }
 
-int cbuf_usedspace(const cbuf_t *me)
+int cbuf_usedspace(const cbuf_t* me)
 {
     if (me->head <= me->tail)
         return me->tail - me->head;
@@ -125,7 +121,7 @@ int cbuf_usedspace(const cbuf_t *me)
         return me->size - (me->head - me->tail);
 }
 
-int cbuf_unusedspace(const cbuf_t *me)
+int cbuf_unusedspace(const cbuf_t* me)
 {
     return me->size - cbuf_usedspace(me);
 }
